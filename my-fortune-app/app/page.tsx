@@ -288,7 +288,31 @@ export default function ShichusuimeiApp() {
         .tab-btn.active { background: rgba(255,215,0,0.2); border-color: #ffd700; color: #ffd700; }
         .calculate-btn { background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); color: #1a0a2e; border: none; padding: 14px 40px; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: inherit; transition: transform 0.3s; }
         .calculate-btn:hover { transform: scale(1.05); }
-        .pillar-card { background: linear-gradient(180deg, rgba(50,30,60,0.9) 0%, rgba(30,20,40,0.95) 100%); border: 1px solid rgba(255,215,0,0.3); border-radius: 12px; padding: 12px; text-align: center; min-width: 80px; display: flex; flex-direction: column; min-height: 200px; }
+        
+        /* 命式のスタイル修正（スマホ対応） */
+        .pillar-card { 
+            background: linear-gradient(180deg, rgba(50,30,60,0.9) 0%, rgba(30,20,40,0.95) 100%); 
+            border: 1px solid rgba(255,215,0,0.3); 
+            border-radius: 12px; 
+            padding: 12px; 
+            text-align: center; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 200px; 
+            flex: 1; /* 幅を均等に */
+            min-width: 0; /* 小さく縮めるように */
+        }
+        .pillar-char { font-size: 28px; transition: font-size 0.3s; }
+        .pillar-sub { font-size: 10px; }
+        
+        /* スマホ用メディアクエリ */
+        @media (max-width: 480px) {
+            .pillar-card { padding: 8px 2px; min-height: 180px; }
+            .pillar-char { font-size: 20px !important; }
+            .pillar-sub { font-size: 9px !important; }
+            .fortune-card { padding: 16px 12px; }
+        }
+
         .fortune-section { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; margin-bottom: 12px; border-left: 3px solid #ffd700; }
         .calendar-day { padding: 8px 4px; text-align: center; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; }
         .calendar-day:hover { transform: scale(1.05); }
@@ -320,30 +344,32 @@ export default function ShichusuimeiApp() {
               {tabs.map((tab) => <button key={tab.id} className={`tab-btn ${activeTab === tab.id ? "active" : ""}`} onClick={() => setActiveTab(tab.id)}>{tab.icon} {tab.label}</button>)}
             </div>
 
-            {/* 各タブの内容（命式、本質など）はここに含まれます（省略していません） */}
+            {/* 各タブの内容 */}
             {activeTab === "meishiki" && (
               <div className="fortune-card">
                 <h2 style={{ color: "#ffd700", marginBottom: "8px", fontSize: "20px", textAlign: "center" }}>📜 命式</h2>
                 <p style={{ textAlign: "center", color: "#a0a0b0", fontSize: "12px", marginBottom: "16px" }}>四柱推命の基本となる命式です。4つの柱があなたの運命を表します。</p>
                 {result.adjustedTime && <div style={{ textAlign: "center", marginBottom: "16px", color: "#a0a0b0", fontSize: "12px" }}>※ {result.prefecture}の経度で真太陽時に補正：{result.adjustedTime.hour}時{result.adjustedTime.minute}分</div>}
-                <div style={{ display: "flex", justifyContent: "center", gap: "8px", flexWrap: "wrap", marginBottom: "24px" }}>
+                
+                {/* 修正箇所：flexWrapを削除し、gapを微調整 */}
+                <div style={{ display: "flex", justifyContent: "center", gap: "4px", marginBottom: "24px" }}>
                   {[
                     { name: "時柱", pillar: result.pillars.hour, key: "時柱" },
                     { name: "日柱", pillar: result.pillars.day, isMain: true, key: "日柱" },
                     { name: "月柱", pillar: result.pillars.month, key: "月柱" },
                     { name: "年柱", pillar: result.pillars.year, key: "年柱" },
                   ].map((item, index) => (
-                    <div key={index} className="pillar-card" style={item.isMain ? { border: "2px solid #ffd700", boxShadow: "0 0 15px rgba(255,215,0,0.3)" } : {}}>
-                      <div style={{ fontSize: "10px", color: "#a0a0b0", marginBottom: "6px", display: "flex", alignItems: "center", justifyContent: "center" }}>{item.name}{item.isMain && <span style={{ color: "#ffd700" }}>（日主）</span>}<InfoButton title={PILLAR_DESCRIPTION[item.key].title}><p>{PILLAR_DESCRIPTION[item.key].detail}</p></InfoButton></div>
+                    <div key={index} className="pillar-card" style={item.isMain ? { border: "2px solid #ffd700", boxShadow: "0 0 10px rgba(255,215,0,0.3)" } : {}}>
+                      <div className="pillar-sub" style={{ color: "#a0a0b0", marginBottom: "6px", display: "flex", alignItems: "center", justifyContent: "center" }}>{item.name}{item.isMain && <span style={{ color: "#ffd700" }}>（主）</span>}<InfoButton title={PILLAR_DESCRIPTION[item.key].title}><p>{PILLAR_DESCRIPTION[item.key].detail}</p></InfoButton></div>
                       {item.pillar ? (
                         <>
-                          <div style={{ minHeight: "20px", marginBottom: "4px" }}>{item.pillar.jusshin && <div style={{ fontSize: "10px", color: "#ff8c00", display: "flex", alignItems: "center", justifyContent: "center" }}>{item.pillar.jusshin}<InfoButton title={item.pillar.jusshin}><p style={{ color: "#ffd700", marginBottom: "8px" }}>{JUSSHIN_DESCRIPTION[item.pillar.jusshin]?.short}</p><p>{JUSSHIN_DESCRIPTION[item.pillar.jusshin]?.detail}</p></InfoButton></div>}</div>
-                          <div style={{ fontSize: "28px", color: gogyoColors[GOGYO[item.pillar.tenkan]]?.text }}>{item.pillar.tenkan}</div>
-                          <div style={{ fontSize: "28px", marginBottom: "6px", color: gogyoColors[CHISHI_GOGYO[item.pillar.chishi]]?.text }}>{item.pillar.chishi}</div>
-                          <div style={{ fontSize: "9px", color: "#808080", marginBottom: "4px" }}>蔵干: {item.pillar.zokan?.join(" ")}</div>
-                          <div style={{ marginTop: "auto", fontSize: "10px", color: "#87CEEB", display: "flex", alignItems: "center", justifyContent: "center" }}>{item.pillar.juniunsei}<InfoButton title={item.pillar.juniunsei}><p style={{ color: "#ffd700", marginBottom: "8px" }}>{JUNIUNSEI_DESCRIPTION[item.pillar.juniunsei]?.short}</p><p>{JUNIUNSEI_DESCRIPTION[item.pillar.juniunsei]?.detail}</p></InfoButton></div>
+                          <div style={{ minHeight: "20px", marginBottom: "4px" }}>{item.pillar.jusshin && <div className="pillar-sub" style={{ color: "#ff8c00", display: "flex", alignItems: "center", justifyContent: "center" }}>{item.pillar.jusshin}<InfoButton title={item.pillar.jusshin}><p style={{ color: "#ffd700", marginBottom: "8px" }}>{JUSSHIN_DESCRIPTION[item.pillar.jusshin]?.short}</p><p>{JUSSHIN_DESCRIPTION[item.pillar.jusshin]?.detail}</p></InfoButton></div>}</div>
+                          <div className="pillar-char" style={{ color: gogyoColors[GOGYO[item.pillar.tenkan]]?.text }}>{item.pillar.tenkan}</div>
+                          <div className="pillar-char" style={{ marginBottom: "6px", color: gogyoColors[CHISHI_GOGYO[item.pillar.chishi]]?.text }}>{item.pillar.chishi}</div>
+                          <div style={{ fontSize: "9px", color: "#808080", marginBottom: "4px", transform: "scale(0.9)" }}>蔵: {item.pillar.zokan?.join(" ")}</div>
+                          <div className="pillar-sub" style={{ marginTop: "auto", color: "#87CEEB", display: "flex", alignItems: "center", justifyContent: "center" }}>{item.pillar.juniunsei}<InfoButton title={item.pillar.juniunsei}><p style={{ color: "#ffd700", marginBottom: "8px" }}>{JUNIUNSEI_DESCRIPTION[item.pillar.juniunsei]?.short}</p><p>{JUNIUNSEI_DESCRIPTION[item.pillar.juniunsei]?.detail}</p></InfoButton></div>
                         </>
-                      ) : <div style={{ color: "#606070", fontSize: "14px", padding: "20px 0", flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>不明</div>}
+                      ) : <div style={{ color: "#606070", fontSize: "12px", padding: "20px 0", flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>不明</div>}
                     </div>
                   ))}
                 </div>
@@ -364,7 +390,6 @@ export default function ShichusuimeiApp() {
               </div>
             )}
 
-            {/* 他のタブの中身は、以前のコードと同じロジックで表示されます */}
             {activeTab === "personality" && (
               <div className="fortune-card">
                 <h2 style={{ color: "#ffd700", marginBottom: "16px", fontSize: "20px", textAlign: "center" }}>🎭 本質と性格</h2>
