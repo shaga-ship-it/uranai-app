@@ -209,8 +209,8 @@ export default function ShichusuimeiApp() {
   const getGogyoAnalysis = () => {
     if (!result) return null;
     const balance = result.gogyoBalance;
-    const max = Object.entries(balance).reduce((a: any, b: any) => a[1] > b[1] ? a : b);
-    const min = Object.entries(balance).reduce((a: any, b: any) => a[1] < b[1] ? a : b);
+    const max: any = Object.entries(balance).reduce((a: any, b: any) => a[1] > b[1] ? a : b);
+    const min: any = Object.entries(balance).reduce((a: any, b: any) => a[1] < b[1] ? a : b);
     let analysis = "";
     if (max[1] >= 3) analysis += `${max[0]}が${max[1]}と多めです。${GOGYO_DESCRIPTION[max[0]].excess} `;
     if (min[1] === 0) {
