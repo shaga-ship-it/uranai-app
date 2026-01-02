@@ -270,8 +270,13 @@ export default function ShichusuimeiApp() {
   // ★ここがSNS拡散の重要ポイント！シェアする文章を動的に作ります
   const getShareText = () => {
     if (!result) return "";
-    const url = window.location.href; // 現在のページのURLを自動取得
-    return `🔮【無料!! 四柱推命・運勢診断】\n\n私の本質は...「${result.personality.symbol}（${result.dayMaster}）」タイプでした！\n今の運勢は「${result.thisYear.jusshin}」みたい🤔\n\nあなたの本質と運勢も診断してみる？\n👇詳しくはこちら\n${url}\n\n#四柱推命 #占い #無料占い`;
+    
+    // 【修正1】URLを「きれいな短縮URL」に固定する
+    // ※ window.location.href だと長いURLになってしまうため
+    const url = "https://uranai-app-eight.vercel.app/";
+
+    // 【修正2】文章に「感情」と「驚き」を足す
+    return `🔮【無料!! 四柱推命・運勢診断】\n\n私の本質は...「${result.personality.symbol}（${result.dayMaster}）」タイプでした！\n今の運勢は「${result.thisYear.jusshin}」みたい🤔\n\n性格も運気も当たりすぎてて怖い...💦\nあなたの運勢はどうなる？\n\n👇今すぐ診断する\n${url}\n\n#四柱推命 #占い #無料占い`;
   };
 
   return (
